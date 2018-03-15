@@ -1,7 +1,16 @@
 #remake of Disney's toontown online, but single player based and text based
 
-#the class to start the game
 
+#checks if provided string is an integer
+def check_if_int(string):
+    try:
+        int(string) #if its a string it will produce an error and go to except
+        print("{0} is a integer".format(string))
+        return True #if it is an integer it will run this 
+    except:
+        return False 
+
+#the class to start the game
 class StartGame(object):
     
     def __init__(self):
@@ -28,8 +37,8 @@ class StartGame(object):
 
     def start_tutorial(self):
         #starts the tutorial for new toons
-        self.tutorial = Tutorial()
-        self.tutorial
+        self.tutorial = Tutorial() #puts tutorial ina  variable
+        self.tutorial.start()
 
 
 class PickAToon(object):
@@ -41,11 +50,12 @@ class PickAToon(object):
         self.name = ''
         self.selected_toon = None
         self.chosen_toon = None
+        
+    def start(self):
         #starts the select which toon function asking the user what toon they want to use
         self.chosen_toon = self.select_a_toon(self.get_toons)
         #starts the function for selecting the actual toon and starting the game
         self.choose_a_toon(self.toons, self.chosen_toon)
-        
     def get_toons(self):
         return self.toons #gets the self.toons list and returns it
     def which_toon(self, toonslist):
@@ -82,19 +92,39 @@ class MakeAToon(object):
     def __init__(self):
         #initalizes the variables
         self.arms = None
+        self.item = None
+        self.list = []
         self.legs = None
         self.color = None
         self.species = None
+        self.body = None
+        self.legs = None
+        self.name = ''
+        self.sizes = []
+        self.species_to_choose_from = []
+        self.start()
+        
+    def start(self):
+        #start the makeatoon process
         self.species_to_choose_from = ['dog', 'cat', 'penguin', 'bear', 'pig', 'rabbit', 'duck', 'horse', 'chicken', 'beaver', 'bat', 'deer', 'crocodile', 'monkey']
-        self.select_species(self.species_to_choose_from)
+        self.select_species(self.species_to_choose_from) #asks the user for the species they want
+        self.sizes = ['small', 'medium', 'large']
+        self.set_appearance(self.sizes)
+        self.set_color()
+        self.set_name()
+        self.Toon = Toon()
+        Toon.new_toon(self.get_species(), self.get_body_size(), self.get_leg_size(), self.get_color(), self.get_name())
+
     def select_species(self, species_to_choose_from):
         self.species_to_choose_from = species_to_choose_from
-        self.species = raw_input('Please select a species from the list of species: {0}'.format(self.species_to_choose_from))
-        if self.species in self.species_to_choose_from:
-            self.set_species(species)
-            print('Your toon is a {0}'.format(species))
-        else:
-            print('invalid species please select one from the list')
+        while self.species is None or check_if_int(self.species) or self.species not in self.species_to_choose_from:  
+            self.species = raw_input('Please select a species from the list of species: {0}'.format(self.species_to_choose_from))
+            if self.species in self.species_to_choose_from:
+                self.set_species(self.species)
+                print('Your toon is a {0}'.format(self.species))
+                break
+            else:
+                print('invalid species please select one from the list')
 
     def set_species(self, species):
         self.species = species
@@ -102,16 +132,56 @@ class MakeAToon(object):
     def get_species(self):
         return self.species
 
+    def appearance_loop(self, item, list):
+        self.item = item
+        self.list = list
+        while self.item not in self.list:
+            self.item = raw_input('Select the size of your {0}: {1}'.format(self.item, self.list))
+            if self.item in self.list:
+                print('{0} size is: {1}'.format(self.item, self.list))
+                break
+            else:
+                print('The size must be an option in the list')
+                continue
     def set_appearance(self, sizeoptions):
         self.size_options = sizeoptions
-        self.body = raw_input('Select the size of your toon: {0}'.format(self.size_options))
-        self.legs = raw_input('Select the size of your legs: {0}'.format(self.size_options))
+        self.body = 'body'
+        self.legs = 'legs'
         
+    def get_body_size(self):
+        return self.body
+    def get_leg_size(self):
+        return self.legs
+
     def set_color(self):
-        self.color = raw_input('Choose a color for your toon: ')
-        try:
-            int(self.color)
-            print('Color has to be a string not an integer!')
-        except:
-            self.color = self.color
+        while check_if_int(self.color) or self.color is None or self.color == '': 
+            self.color = raw_input('Choose a color for your toon: ')
+            if self.color == '':
+                print('Color cannot be nothing')
+                continue
+            elif check_if_int(self.color):
+                print('Color cannot be an integer')
+                continue
+            elif self.color is None:
+                print('Color is none type')
+                continue
+            else:
+                break
+         
+            
+    def get_color(self):
+        return self.color
         
+
+    def set_name(self):
+        while check_if_int(self.name) or self.name is None or self.name == '':
+            self.name = raw_input("Please enter your toon's name")
+            if self.name == '':
+                print("Name cannot be blank")
+                continue
+            elif check_if_int(self.name):
+                print('Name cannot be an integer')
+            else:
+                break
+    def get_name(self):
+        return self.name 
