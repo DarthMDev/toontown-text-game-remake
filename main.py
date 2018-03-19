@@ -102,24 +102,24 @@ class MakeAToon(object):
         self.name = ''
         self.sizes = []
         self.species_to_choose_from = []
-        self.start()
+        self.start() # starts the makeatoon process
         
     def start(self):
         #start the makeatoon process
-        self.species_to_choose_from = ['dog', 'cat', 'penguin', 'bear', 'pig', 'rabbit', 'duck', 'horse', 'chicken', 'beaver', 'bat', 'deer', 'crocodile', 'monkey']
+        self.species_to_choose_from = ['dog', 'cat', 'penguin', 'bear', 'pig', 'rabbit', 'duck', 'horse', 'chicken', 'beaver', 'bat', 'deer', 'crocodile', 'monkey'] #define the list of animals to choose from
         self.select_species(self.species_to_choose_from) #asks the user for the species they want
-        self.sizes = ['small', 'medium', 'large']
-        self.set_appearance(self.sizes)
-        self.set_color()
-        self.set_name()
-        self.Toon = Toon()
-        Toon.new_toon(self.get_species(), self.get_body_size(), self.get_leg_size(), self.get_color(), self.get_name())
+        self.sizes = ['small', 'medium', 'large'] #define the list of sizes to choose from
+        self.set_appearance(self.sizes) #set the appearance options of your toon
+        self.set_color() # set the color of your toon
+        self.set_name() # set the name of your toon
+        self.Toon = Toon() # class of toon initalizing
+        Toon.new_toon(self.get_species(), self.get_body_size(), self.get_leg_size(), self.get_color(), self.get_name()) #makes a new toon from the makeatoon
 
     def select_species(self, species_to_choose_from):
-        self.species_to_choose_from = species_to_choose_from
-        while self.species is None or check_if_int(self.species) or self.species not in self.species_to_choose_from:  
+        self.species_to_choose_from = species_to_choose_from 
+        while self.species is None or check_if_int(self.species) or self.species not in self.species_to_choose_from:  #as long as species is none , species is an integer, or species is not in species to choose from
             self.species = raw_input('Please select a species from the list of species: {0}'.format(self.species_to_choose_from))
-            if self.species in self.species_to_choose_from:
+            if self.species in self.species_to_choose_from: #if its in the list set the species
                 self.set_species(self.species)
                 print('Your toon is a {0}'.format(self.species))
                 break
@@ -136,25 +136,27 @@ class MakeAToon(object):
         self.item = item
         self.list = list
         while self.item not in self.list:
-            self.item = raw_input('Select the size of your {0}: {1}'.format(self.item, self.list))
+            self.item = raw_input('Select the size of your {0}: {1}'.format(item, self.list)) 
             if self.item in self.list:
-                print('{0} size is: {1}'.format(self.item, self.list))
+                print('{0} size is: {1}'.format(item, self.list[self.item]))
                 break
             else:
                 print('The size must be an option in the list')
                 continue
+        return self.item
     def set_appearance(self, sizeoptions):
         self.size_options = sizeoptions
         self.body = 'body'
         self.legs = 'legs'
-        
+        #do the loop for selecting a proper size for body and legs and set it to the variables
+        self.body = self.appearance_loop(self.body, self.size_options) 
+        self.legs = self.appearance_loop(self.legs, self.size_options)
     def get_body_size(self):
         return self.body
     def get_leg_size(self):
         return self.legs
-
     def set_color(self):
-        while check_if_int(self.color) or self.color is None or self.color == '': 
+        while check_if_int(self.color) or self.color is None or self.color == '': #as long as color is an integer, Nonetype, or blank ask the user for the color they want
             self.color = raw_input('Choose a color for your toon: ')
             if self.color == '':
                 print('Color cannot be nothing')
@@ -174,7 +176,7 @@ class MakeAToon(object):
         
 
     def set_name(self):
-        while check_if_int(self.name) or self.name is None or self.name == '':
+        while check_if_int(self.name) or self.name is None or self.name == '': #as long as name is an integer, nonetype, or blank ask the user for the name they want
             self.name = raw_input("Please enter your toon's name")
             if self.name == '':
                 print("Name cannot be blank")
@@ -185,3 +187,53 @@ class MakeAToon(object):
                 break
     def get_name(self):
         return self.name 
+
+class Toon(object):
+    def __init__(self):
+        self.dna = []
+        self.inventory = ['Throw', 'Squirt']
+        self.gag = ''
+        self.maxhp = 15
+        self.hp = 15
+        self.exp = 0
+        self.maxexp = 10500
+        self.quests = []
+        self.current_quests = []
+        self.carry_limit_quests = 1
+        self.gag_carry_limit = 20
+
+    def start(self):
+        pass
+    def new_toon(self, species, body, legs, color, name):
+        self.species = species
+        self.body = body
+        self.legs = legs
+        self.color = color
+        self.name = name
+        self.dna.append((self.species, self.body, self.legs, self.color, self.name))
+        self.set_dna(self.dna)
+
+    def set_dna(self, dna):
+        self.dna = dna
+
+    def get_dna(self):
+        return self.dna
+
+    def set_experience(self, gag, experience):
+        self.gag = gag
+        self.exp = experience
+        if self.gag in self.inventory:
+            self.inventory[self.gag] = self.experience
+        else:
+            print('{0} is not  a gag in your inventory {1}'.format(self.gag, self.inventory))
+        
+    def get_experience(self, gag):
+        return self.inventory[gag]
+    def set_quests(self, quests, quest_id):
+        self.quest_id = quest_id
+        self.quests = quests
+        if len(self.quests) >= self.carry_limit_quests:
+            print("Can't add quest , already have max number of quests you can carry")    
+        else:
+            self.quests.append(quest_id)
+            self.current_quests = self.quests
