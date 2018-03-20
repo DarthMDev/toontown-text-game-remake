@@ -168,6 +168,7 @@ class MakeAToon(object):
                 print('Color is none type')
                 continue
             else:
+                print("Toon's color is {0}".format(self.color))
                 break
          
             
@@ -184,6 +185,7 @@ class MakeAToon(object):
             elif check_if_int(self.name):
                 print('Name cannot be an integer')
             else:
+                print("Toon's name is {0}".format(self.name))
                 break
     def get_name(self):
         return self.name 
@@ -192,11 +194,13 @@ class Toon(object):
     def __init__(self):
         self.dna = []
         self.inventory = ['Throw', 'Squirt']
+        self.inventory_experience = []
         self.gag = ''
         self.maxhp = 15
         self.hp = 15
         self.exp = 0
         self.maxexp = 10500
+        self.quest_id = 0
         self.quests = []
         self.current_quests = []
         self.carry_limit_quests = 1
@@ -219,16 +223,27 @@ class Toon(object):
     def get_dna(self):
         return self.dna
 
-    def set_experience(self, gag, experience):
+    def add_experience(self, gag, experience):
         self.gag = gag
         self.exp = experience
-        if self.gag in self.inventory:
-            self.inventory[self.gag] = self.experience
+        try:
+            self.index = self.inventory_experience[self.inventory_experience.index(self.gag)]
+        except:
+            self.index = None
+        if self.inventory_experience[self.gag] == self.index and self.gag in self.inventory:
+            self.inventory_experience[self.gag] += self.exp
+        elif self.gag in self.inventory and self.inventory_experience[self.gag] != self.index:
+            self.inventory_experience.insert(self.inventory.index(self.gag),0)
+            self.inventory_experience[self.gag] += self.exp
         else:
             print('{0} is not  a gag in your inventory {1}'.format(self.gag, self.inventory))
-        
+        if self.inventory_experience in self.dna:
+            self.dna.insert(self.dna.index(self.dna[self.inventory_experience]), self.inventory_experience)
+        else:
+            self.dna.append(self.inventory_experience)
     def get_experience(self, gag):
-        return self.inventory[gag]
+        return self.inventory_experience[self.inventory_experience.index(gag)]
+
     def set_quests(self, quests, quest_id):
         self.quest_id = quest_id
         self.quests = quests
@@ -237,3 +252,50 @@ class Toon(object):
         else:
             self.quests.append(quest_id)
             self.current_quests = self.quests
+            if self.quests in self.dna:
+                self.dna.insert(self.dna.index([self.quests], self.current_quests))
+            else:
+                self.dna.append(self.current_quests)
+
+    def add_quests(self, quest_id):
+        self.quest_id = quest_id
+        if len(self.current_quests) >= self.carry_limit_quests:
+            print("Can't add quest , already have max number of quests you can carry")
+        else:
+            self.current_quests.append(quest_id)
+            if self.quests in self.dna:
+                self.dna.insert(self.dna.index([self.quests], self.current_quests))
+    def get_quests(self):
+        return self.current_quests
+
+    def set_hp(self, hp):
+        self.hp = hp
+
+    def set_max_hp(self, maxhp):
+        self.maxhp = maxhp
+        self.hp = maxhp
+    def add_max_hp(self, amount):
+        self.amount = amount
+        self.maxhp += amount
+        self.hp = self.maxhp
+
+    def heal(self, amount):
+        if self.hp < self.maxhp:
+            self.hp += amount
+    def lose_health(self, amount):
+        self.hp -= amount
+    def get_hp(self):
+         return self.hp
+    def get_max_hp(self):
+        return self.maxhp 
+    def set_inventory(self, inventory)
+        self.inventory = inventory
+    def add_gag_to_inventory(self, gag, inventory):
+        self.gag = gag
+        self.inventory = inventory
+        if self.gag not in self.inventory:
+            self.inventory.append(self.gag)
+        else:
+            print('inventory already has gag {0} in inventory: {1}'.format(self.gag, self.inventory))
+    def get_inventory(self):
+        return self.inventory
