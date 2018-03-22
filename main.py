@@ -15,31 +15,26 @@ class StartGame(object):
     
     def __init__(self):
         #start the classes of the game
+        print('Starting game...')
         self.start_pick_a_toon()
 
     def start_pick_a_toon(self):
         #start the pick a toon class 
+        print('Starting pick a toon...')
         self.PickAToon = PickAToon() #define pickatoon class
-        self.PickAToon.__init__()
+        self.PickAToon.start()
         self.Toon = Toon() # define the toon class
         if self.PickAToon.get_state() == 'toon selected': #if you select a toon that has been already created you load the previouszone you were in
             Toon.load_previous_zone()
         else:
             self.start_make_a_toon() #otherwise if there is no toon in that slot make a new one
+            print('Starting make a toon....')
     def start_make_a_toon(self):
-
         #starts the make a toon class which creates a new toon object
         self.MakeAToon = MakeAToon() #define makeatoon class
+        self.MakeAToon.start()
         self.Toon = Toon() #define the toon class
         self.Tutorial = Tutorial() # define tutorial class
-        self.Toon.new_toon() # make a new toon in the database
-        self.start_tutorial() # starts the tutorial level
-
-    def start_tutorial(self):
-        #starts the tutorial for new toons
-        self.tutorial = Tutorial() #puts tutorial ina  variable
-        self.tutorial.start()
-
 
 class PickAToon(object):
     #class to load up the toons and select one
@@ -106,6 +101,7 @@ class MakeAToon(object):
         
     def start(self):
         #start the makeatoon process
+        print ('Starting make a toon....')
         self.species_to_choose_from = ['dog', 'cat', 'penguin', 'bear', 'pig', 'rabbit', 'duck', 'horse', 'chicken', 'beaver', 'bat', 'deer', 'crocodile', 'monkey'] #define the list of animals to choose from
         self.select_species(self.species_to_choose_from) #asks the user for the species they want
         self.sizes = ['small', 'medium', 'large'] #define the list of sizes to choose from
@@ -113,6 +109,7 @@ class MakeAToon(object):
         self.set_color() # set the color of your toon
         self.set_name() # set the name of your toon
         self.Toon = Toon() # class of toon initalizing
+        print('Creating toon in database')
         Toon.new_toon(self.get_species(), self.get_body_size(), self.get_leg_size(), self.get_color(), self.get_name()) #makes a new toon from the makeatoon
 
     def select_species(self, species_to_choose_from):
@@ -175,7 +172,6 @@ class MakeAToon(object):
     def get_color(self):
         return self.color
         
-
     def set_name(self):
         while check_if_int(self.name) or self.name is None or self.name == '': #as long as name is an integer, nonetype, or blank ask the user for the name they want
             self.name = raw_input("Please enter your toon's name")
@@ -194,6 +190,13 @@ class Toon(object):
     def __init__(self):
         self.dna = []
         self.inventory = ['Throw', 'Squirt']
+        self.throw_gags = ['Cupcake']
+        self.squirt_gags = ['Squirting Flower']
+        self.toon_up_gags = []
+        self.trap_gags = []
+        self.lure_gags = []
+        self.sound_gags = []
+        self.drop_gags = []
         self.inventory_experience = []
         self.gag = ''
         self.maxhp = 15
@@ -216,6 +219,8 @@ class Toon(object):
         self.name = name
         self.dna.append((self.species, self.body, self.legs, self.color, self.name))
         self.set_dna(self.dna)
+        tutorial = Tutorial()
+        tutorial.start()
 
     def set_dna(self, dna):
         self.dna = dna
@@ -223,26 +228,41 @@ class Toon(object):
     def get_dna(self):
         return self.dna
 
-    def add_experience(self, gag, experience):
-        self.gag = gag
+    def set_gag_pouch(self, gag_carry_limit):
+        self.previous_gag_pouch = self.gag_carry_limit
+        self.gag_carry_limit = gag_carry_limit
+        if self.previous_gag_pouch in self.dna:
+            self.dna.insert(self.dna.index(self.dna[self.previous_gag_pouch]), self.gag_carry_limit) 
+
+        else:
+            self.dna.append(self.gag_carry_limit)
+
+
+    def set_experience(self, track, experience):
+        self.track = track
+        self.experience = experience
+        if self.track in self.inventory:
+            self.inventory_experience[]
+    def add_experience(self, track, experience):
+        self.track = track
         self.exp = experience
         try:
-            self.index = self.inventory_experience[self.inventory_experience.index(self.gag)]
+            self.index = self.inventory_experience[self.inventory_experience.index(self.track)]
         except:
             self.index = None
-        if self.inventory_experience[self.gag] == self.index and self.gag in self.inventory:
-            self.inventory_experience[self.gag] += self.exp
-        elif self.gag in self.inventory and self.inventory_experience[self.gag] != self.index:
-            self.inventory_experience.insert(self.inventory.index(self.gag),0)
-            self.inventory_experience[self.gag] += self.exp
+        if self.inventory_experience[self.track] == self.index and self.track in self.inventory:
+            self.inventory_experience[self.track] += self.exp
+        elif self.track in self.inventory and self.inventory_experience[self.track] != self.index:
+            self.inventory_experience.insert(self.inventory.index(self.track),0)
+            self.inventory_experience[self.track] += self.exp
         else:
             print('{0} is not  a gag in your inventory {1}'.format(self.gag, self.inventory))
         if self.inventory_experience in self.dna:
             self.dna.insert(self.dna.index(self.dna[self.inventory_experience]), self.inventory_experience)
         else:
             self.dna.append(self.inventory_experience)
-    def get_experience(self, gag):
-        return self.inventory_experience[self.inventory_experience.index(gag)]
+    def get_experience(self, track):
+        return self.inventory_experience[self.inventory_experience.index(track)]
 
     def set_quests(self, quests, quest_id):
         self.quest_id = quest_id
@@ -253,7 +273,7 @@ class Toon(object):
             self.quests.append(quest_id)
             self.current_quests = self.quests
             if self.quests in self.dna:
-                self.dna.insert(self.dna.index([self.quests], self.current_quests))
+                self.dna.insert(self.dna.index(self.dna[self.quests], self.current_quests))
             else:
                 self.dna.append(self.current_quests)
 
@@ -264,38 +284,150 @@ class Toon(object):
         else:
             self.current_quests.append(quest_id)
             if self.quests in self.dna:
-                self.dna.insert(self.dna.index([self.quests], self.current_quests))
+                self.dna.insert(self.dna.index(self.dna[self.quests], self.current_quests))
+
+            else:
+                self.dna.append(self.current_quests)
+        
     def get_quests(self):
+        print('Current tasks: {0}'.format(self.current_quests))
         return self.current_quests
 
     def set_hp(self, hp):
+        self.previous_hp = self.hp 
         self.hp = hp
+        if self.previous_hp in self.dna:
+            self.dna.insert(self.dna.index)
+        else:
+            self.dna.append(self.hp)
 
-    def set_max_hp(self, maxhp):
+    def set_max_hp(self, maxhp): 
+        self.previous_hp = self.hp
+        self.previous_max_hp = self.maxhp 
+        
         self.maxhp = maxhp
-        self.hp = maxhp
+        self.hp = set_hp(maxhp)
+        if self.previous_max_hp in self.dna:
+            self.dna.insert(self.dna.index(self.dna[self.previous_max_hp], self.maxhp))
+        else:
+            self.dna.append(self.maxhp)
+        if self.previous_hp in self.dna:
+            self.dna.insert(self.dna.index(self.dna[self.previous_hp]), self.hp)
+        else:
+            self.dna.append(self.hp)
+
     def add_max_hp(self, amount):
+        self.previous_hp = self.hp
+        self.previous_max_hp = self.maxhp 
         self.amount = amount
         self.maxhp += amount
         self.hp = self.maxhp
-
+        if self.previous_maxhp in self.dna:
+            self.dna.insert(self.dna.index(self.dna[self.previous_max_hp]), self.maxhp)
+        else:
+            self.dna.append(self.maxhp)
+        if self.previous_hp in self.dna:
+            self.dna.insert(self.dna.index(self.dna[self.previous_hp]), self.hp)
+        else:
+            self.dna.append(self.hp)
     def heal(self, amount):
         if self.hp < self.maxhp:
-            self.hp += amount
+            self.set_hp(self.hp + amount)
+        else:
+            print('full on health')
+
     def lose_health(self, amount):
-        self.hp -= amount
+        self.set_hp(self.hp - amount)
     def get_hp(self):
-         return self.hp
+         print('laff is {0}'.format(self.dna.hp))
+         return self.dna.hp
     def get_max_hp(self):
-        return self.maxhp 
+        print('max laff is {0}'.format(self.dna.maxhp))
+        return self.dna.maxhp 
+
     def set_inventory(self, inventory)
+        self.previous_inventory = self.inventory
         self.inventory = inventory
+        if self.previous_inventory not in self.dna:
+            self.dna.append(self.inventory)
+        else:
+            self.dna.insert(self.dna.index([self.dna[self.previous_inventory]), self.inventory)
+    
     def add_gag_to_inventory(self, gag, inventory):
         self.gag = gag
+        self.previous_inventory = self.inventory
         self.inventory = inventory
         if self.gag not in self.inventory:
             self.inventory.append(self.gag)
         else:
             print('inventory already has gag {0} in inventory: {1}'.format(self.gag, self.inventory))
+        if self.previous_inventory in self.dna:
+            self.dna.insert(self.dna.index(self.dna[self.previous_inventory]), self.inventory)
+        else:
+            self.dna.append(self.inventory)
     def get_inventory(self):
-        return self.inventory
+        print('Gag access: {0}'.format(self.dna.inventory))
+        return self.dna.inventory
+
+
+class Tutorial(object):
+    def __init__(self):
+        self.tutorial_suit = None
+        self.toon = None
+        self.tutorial_task = None
+        self.tutorial_dialog = ''
+        self.tutorial_npc = 'Tutorial Tom'
+        
+
+    def start(self):
+        print('This part of the game is still in development!')
+        #self.start_dialog()
+        #self.tutorial_suit = TutorialSuit()
+        #self.tutorial_suit.generate()
+
+    def start_dialog(self):
+        print('{0}: Hello there! Welcome to toontown!')
+        #TODO
+
+    def set_defaults(self):
+        self.toon = Toon()
+        self.toon.set_max_hp(15)
+        self.toon.add_quests(self.get_tutorial_task)
+        self.toon.set_throw_gags('Cupcake')
+        self.toon.set_squirt_gags('Squirting Flower')
+        self.toon.set_quest_carry_limit(1)
+        self.toon.set_gag_pouch(20)
+        self.toon.set_inventory(('Throw', 'Squirt'))
+        self.toon.set_experience('Throw', 0)
+        self.toon.set_experience('Squirt', 0)
+
+
+class TutorialSuit(object):
+    def __init__(self):
+        self.hp = 6
+        self.maxhp = 6
+        self.name = 'Flunky Level 1'
+        
+    def generate(self):
+        self.set_name('Flunky')
+        self.set_max_hp(6)
+        #TODO
+        #self.set_default_damage()
+    def set_name(self, name):
+        self.name = name
+
+    def get_name(self):
+        return self.name 
+    
+    def set_max_hp(self, maxhp):
+        self.maxhp = maxhp
+        self.hp = maxhp
+    def get_max_hp(self):
+        return self.maxhp
+
+    def set_hp(self, hp):
+        self.hp = hp 
+    def get_hp(self):
+        return self.hp
+
+
