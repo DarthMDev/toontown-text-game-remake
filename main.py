@@ -1,6 +1,7 @@
 #remake of Disney's toontown online, but single player based and text based
 
-
+import time
+import random
 #checks if provided string is an integer
 def check_if_int(string):
     try:
@@ -15,12 +16,15 @@ class StartGame(object):
     
     def __init__(self):
         #start the classes of the game
+        time.sleep(1)
         print('Starting game...')
+        time.sleep(5)
         self.start_pick_a_toon()
 
     def start_pick_a_toon(self):
         #start the pick a toon class 
         print('Starting pick a toon...')
+        time.sleep(5)
         self.PickAToon = PickAToon() #define pickatoon class
         self.PickAToon.start()
         self.Toon = Toon() # define the toon class
@@ -110,7 +114,7 @@ class MakeAToon(object):
         self.set_name() # set the name of your toon
         self.Toon = Toon() # class of toon initalizing
         print('Creating toon in database')
-        Toon.new_toon(self.get_species(), self.get_body_size(), self.get_leg_size(), self.get_color(), self.get_name()) #makes a new toon from the makeatoon
+        self.Toon.new_toon(self.get_species(), self.get_body_size(), self.get_leg_size(), self.get_color(), self.get_name()) #makes a new toon from the makeatoon
 
     def select_species(self, species_to_choose_from):
         self.species_to_choose_from = species_to_choose_from 
@@ -135,7 +139,7 @@ class MakeAToon(object):
         while self.item not in self.list:
             self.item = raw_input('Select the size of your {0}: {1}'.format(item, self.list)) 
             if self.item in self.list:
-                print('{0} size is: {1}'.format(item, self.list[self.item]))
+                print('{0} size is: {1}'.format(item, self.list[self.list.index(self.item)]))
                 break
             else:
                 print('The size must be an option in the list')
