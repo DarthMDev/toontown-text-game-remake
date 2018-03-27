@@ -48,7 +48,7 @@ class PickAToon(object):
         
     def start(self):
         #starts the select which toon function asking the user what toon they want to use
-        self.chosen_toon = self.select_a_toon(self.get_toons)
+        self.chosen_toon = self.which_toon(self.get_toons)
         #starts the function for selecting the actual toon and starting the game
         self.choose_a_toon(self.toons, self.chosen_toon)
     def get_toons(self):
@@ -241,8 +241,13 @@ class Toon(object):
     def set_experience(self, track, experience):
         self.track = track
         self.experience = experience
-        if self.track in self.inventory:
-            self.inventory_experience[]
+        if self.track in self.inventory and index(self.inventory_experience[self.inventory[self.inventory.index(self.track)]]) < len(self.inventory_experience) :
+            self.inventory_experience[self.inventory[self.inventory.index(self.track)]] = self.experience
+        elif self.track in self.inventory and index(self.inventory_experience[self.inventory[self.inventory.index(self.track)]]) > len(self.inventory_experience):
+            self.inventory_experience.insert(self.inventory.index(self.track), self.track)
+        else:
+            print('Gag is not in inventory')
+
     def add_experience(self, track, experience):
         self.track = track
         self.exp = experience
@@ -345,13 +350,13 @@ class Toon(object):
         print('max laff is {0}'.format(self.dna.maxhp))
         return self.dna.maxhp 
 
-    def set_inventory(self, inventory)
+    def set_inventory(self, inventory):
         self.previous_inventory = self.inventory
         self.inventory = inventory
         if self.previous_inventory not in self.dna:
             self.dna.append(self.inventory)
         else:
-            self.dna.insert(self.dna.index([self.dna[self.previous_inventory]), self.inventory)
+            self.dna.insert(self.dna.index(self.dna[self.previous_inventory]), self.inventory)
     
     def add_gag_to_inventory(self, gag, inventory):
         self.gag = gag
@@ -430,4 +435,4 @@ class TutorialSuit(object):
     def get_hp(self):
         return self.hp
 
-
+StartGame()
