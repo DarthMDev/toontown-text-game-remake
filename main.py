@@ -16,35 +16,39 @@ class StartGame(object):
     
     def __init__(self):
         #start the classes of the game
-        time.sleep(1)
+        self.make_a_toon = None 
+        self.toon = None
+        self.tutorial = None 
         print('Starting game...')
-        time.sleep(5)
+        time.sleep(1)
         self.start_pick_a_toon()
 
     def start_pick_a_toon(self):
         #start the pick a toon class 
         print('Starting pick a toon...')
         time.sleep(5)
-        self.PickAToon = PickAToon() #define pickatoon class
-        self.PickAToon.start()
-        self.Toon = Toon() # define the toon class
-        if self.PickAToon.get_state() == 'toon selected': #if you select a toon that has been already created you load the previouszone you were in
-            Toon.load_previous_zone()
+        self.pick_a_toon = PickAToon() #define pickatoon class
+        self.pick_a_toon.start()
+        self.toon = Toon() # define the toon class
+        if self.pick_a_toon.get_state() == 'toon selected': #if you select a toon that has been already created you load the previouszone you were in
+            self.toon.load_previous_zone()
         else:
             self.start_make_a_toon() #otherwise if there is no toon in that slot make a new one
             print('Starting make a toon....')
     def start_make_a_toon(self):
         #starts the make a toon class which creates a new toon object
-        self.MakeAToon = MakeAToon() #define makeatoon class
-        self.MakeAToon.start()
-        self.Toon = Toon() #define the toon class
-        self.Tutorial = Tutorial() # define tutorial class
+        self.make_a_toon = MakeAToon() #define makeatoon class
+        self.make_a_toon.start()
+        self.toon = Toon() #define the toon class
+        self.tutorial = Tutorial() # define tutorial class
 
 class PickAToon(object):
     #class to load up the toons and select one
     def __init__(self):
         #initalizes the variables
         self.toons = []
+        self.toon = None 
+        self.toonslist = []
         self.state = ''
         self.name = ''
         self.selected_toon = None
@@ -59,7 +63,7 @@ class PickAToon(object):
         return self.toons #gets the self.toons list and returns it
     def which_toon(self, toonslist):
         self.toons = self.get_toons() #runs the get toons function to know what the current list of toons is
-        if len(self.toons) != 0: #if list isnt empty
+        if not self.toons: #if list isnt empty
             self.selected_toon = raw_input("Select a toon from the list, types its name: {0}".format(toonslist)) #asks the user to select a toon from the list
         else:
             self.selected_toon = None #set it to None so we create a new toon
@@ -100,6 +104,7 @@ class MakeAToon(object):
         self.legs = None
         self.name = ''
         self.sizes = []
+        self.size_options = []
         self.species_to_choose_from = []
         self.start() # starts the makeatoon process
         
@@ -112,9 +117,9 @@ class MakeAToon(object):
         self.set_appearance(self.sizes) #set the appearance options of your toon
         self.set_color() # set the color of your toon
         self.set_name() # set the name of your toon
-        self.Toon = Toon() # class of toon initalizing
+        self.toon = Toon() #  toon class initializing
         print('Creating toon in database')
-        self.Toon.new_toon(self.get_species(), self.get_body_size(), self.get_leg_size(), self.get_color(), self.get_name()) #makes a new toon from the makeatoon
+        self.toon.new_toon(self.get_species(), self.get_body_size(), self.get_leg_size(), self.get_color(), self.get_name()) #makes a new toon from the makeatoon
 
     def select_species(self, species_to_choose_from):
         self.species_to_choose_from = species_to_choose_from 
@@ -133,9 +138,9 @@ class MakeAToon(object):
     def get_species(self):
         return self.species
 
-    def appearance_loop(self, item, list):
+    def appearance_loop(self, item, _list):
         self.item = item
-        self.list = list
+        self.list = _list
         while self.item not in self.list:
             self.item = raw_input('Select the size of your {0}: {1}'.format(item, self.list)) 
             if self.item in self.list:
@@ -347,9 +352,11 @@ class Toon(object):
 
     def lose_health(self, amount):
         self.set_hp(self.hp - amount)
+    
     def get_hp(self):
-         print('laff is {0}'.format(self.dna.hp))
-         return self.dna.hp
+        print('laff is {0}'.format(self.dna.hp))
+        return self.dna.hp
+    
     def get_max_hp(self):
         print('max laff is {0}'.format(self.dna.maxhp))
         return self.dna.maxhp 
