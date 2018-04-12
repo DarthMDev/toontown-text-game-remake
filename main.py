@@ -140,8 +140,8 @@ class MakeAToon(object):
     def get_species(self):
         return self.species
 
-    def appearance_loop(self, item, _list, type):
-        self.type = type
+    def appearance_loop(self, item, _list, _type):
+        self.type = _type
         self.types = ['body', 'legs']
         self.item = item
         self.list = _list
