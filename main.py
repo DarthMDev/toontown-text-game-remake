@@ -102,6 +102,8 @@ class MakeAToon(object):
         self.species = None
         self.body = None
         self.legs = None
+        self.type = None
+        self.types = []
         self.name = ''
         self.sizes = []
         self.size_options = []
@@ -138,25 +140,29 @@ class MakeAToon(object):
     def get_species(self):
         return self.species
 
-    def appearance_loop(self, item, _list):
+    def appearance_loop(self, item, _list, type):
+        self.type = type
+        self.types = ['body', 'legs']
         self.item = item
         self.list = _list
-        while self.item not in self.list:
-            self.item = raw_input('Select the size of your {0}: {1}'.format(item, self.list)) 
+        while self.item not in self.list or self.item is None or self.item is None or check_if_int(self.item) or self.type not in self.types:
+            self.item = raw_input('Select the size of your {0}: {1}'.format(self.type, self.list)) 
             if self.item in self.list:
                 print('{0} size is: {1}'.format(item, self.list[self.list.index(self.item)]))
                 break
+
+            elif self.type not in self.types:
+                print('Not a valid type of appearance')
+                continue 
             else:
                 print('The size must be an option in the list')
                 continue
         return self.item
     def set_appearance(self, sizeoptions):
         self.size_options = sizeoptions
-        self.body = 'body'
-        self.legs = 'legs'
         #do the loop for selecting a proper size for body and legs and set it to the variables
-        self.body = self.appearance_loop(self.body, self.size_options) 
-        self.legs = self.appearance_loop(self.legs, self.size_options)
+        self.body = self.appearance_loop(self.body, self.size_options, 'body') 
+        self.legs = self.appearance_loop(self.legs, self.size_options, 'legs')
     def get_body_size(self):
         return self.body
     def get_leg_size(self):
